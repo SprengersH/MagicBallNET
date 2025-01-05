@@ -1,36 +1,62 @@
-﻿# Lichtkrant CLI
+﻿# Light Board CLI
 
-Dit project heb ik ontwikkeld om een lichtkrant aan te sturen via een seriële verbinding. Het ondersteunt zowel C# als Java en biedt functionaliteit zoals apparaat-informatie ophalen, tekst versturen en geheugen onderzoeken.
+This project was developed to control a light board via a serial connection. It offers functionality such as retrieving device information, sending text, and exploring memory. Implementations in both C# and Java are available.
 
-## Hoe ik dit heb gerealiseerd
+---
 
-### Stap 1: Basisconfiguratie
-Ik ben begonnen met het configureren van de seriële verbinding. Door te experimenteren en verschillende instellingen uit te proberen, kwam ik uiteindelijk tot de juiste configuratie:
+## How this project was created
+
+### Step 1: Basic configuration
+To control the light board, the serial connection was configured first. After experimenting with various settings, the correct configuration was determined to be:
 - **Baudrate**: 4800
 - **Parity**: Even
 - **Data bits**: 8
 - **Stop bits**: 1
 
-### Stap 2: Onderzoek en implementatie
-Ik heb kleine programma's geschreven om te testen hoe het apparaat reageerde. Eerst stuurde ik eenvoudige leescommando's om te controleren of er een reactie kwam. Het apparaat retourneerde gestructureerde gegevens, die ik stap voor stap decodeerde. Zo kreeg ik een beter begrip van het protocol en de werking.
+### Step 2: Research and implementation
+Small programs were initially written to test the device's responses. Simple read commands were sent to verify communication, and the received data was analyzed and interpreted step by step.
 
-### Stap 3: Tekst versturen
-Na het begrijpen van de basisfunctionaliteit, heb ik functies toegevoegd om tekst te versturen naar de lichtkrant. Het apparaat accepteert tekst in **IBM437-encoding**. Om ervoor te zorgen dat de tekst goed op het scherm wordt weergegeven, heb ik extra spaties toegevoegd aan de tekst, zodat deze niet te snel herhaalt.
-
-### Java vs. C#
-Ik heb zowel in C# als in Java dezelfde functionaliteit geïmplementeerd. In Java maak ik gebruik van de **RXTX-bibliotheek** voor seriële communicatie, terwijl ik in C# gebruik maak van **System.IO.Ports**. Beide versies zijn functioneel gelijk.
-
-## Hoe te gebruiken
-1. Sluit de lichtkrant aan op een beschikbare COM-poort.
-2. Pas de COM-poort in de code aan zodat deze overeenkomt met de poort waaraan de lichtkrant is verbonden.
-3. Compileer en voer het programma uit in de taal die je wilt gebruiken.
-4. Kies een optie in de CLI en volg de instructies.
-
-## Toekomstige uitbreidingen
-- Geavanceerd geheugenonderzoek om meer inzicht te krijgen in de werking van het apparaat.
-- Een GUI bouwen om het gebruik makkelijker te maken.
-- Verbeterde foutafhandeling en logging voor robuustere prestaties.
+### Step 3: Sending text
+The light board accepts text in IBM437 encoding. A function was added to send text, with optional extra spaces to adjust how the text is displayed on the device.
 
 ---
 
-Met dit project heb ik stap voor stap de lichtkrant onder controle gekregen en heb ik geleerd hoe ik de seriële communicatie effectief kan toepassen.
+## Memory exploration
+
+### Functionality
+The project includes several options to explore the memory of the light board:
+
+1. **Exploring memory pages**  
+   Retrieves the content of specific memory pages. This helps gain insight into the structure of the memory.
+
+2. **Optimized memory exploration**  
+   This function searches memory sequentially by addresses. Each address is checked for relevant data, helping identify useful memory locations.
+
+3. **Viewing the memory map**  
+   Displays an overview of the entire memory, showing the contents of each memory address.
+
+4. **Searching memory**  
+   Allows searching for a specific term within the memory. Results indicate where in the memory the entered text is found.
+
+---
+
+## Project status
+
+Although much functionality is already available, there are still unanswered questions about the memory and internal structure of the light board. To gain further clarity, contact has been made with the device's manufacturer. Their feedback could enable further improvements and extensions.
+
+---
+
+## How to use
+
+1. Connect the light board to an available COM port.
+2. Adjust the COM port setting in the code to match the correct port.
+3. Compile and run the program.
+4. Select an option in the CLI to interact with the light board.
+
+---
+
+## Future improvements
+- Gaining more insight into the memory after feedback from the manufacturer.
+- Enhanced memory search functionality.
+- Potential GUI support to make the light board more user-friendly.
+- Improved error handling and logging.

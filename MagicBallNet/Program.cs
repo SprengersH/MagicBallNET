@@ -1,4 +1,6 @@
-﻿namespace MagicBallNet;
+﻿using System;
+
+namespace MagicBallNet;
 
 class Program
 {
