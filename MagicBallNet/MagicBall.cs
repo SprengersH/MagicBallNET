@@ -147,7 +147,7 @@ public class MagicBall : IDisposable
         {
             try
             {
-                WriteCommandWithoutEcho(0x1B, 0x47, (byte)(startAddress >> 8), (byte)(startAddress & 0xFF), 0x03);
+                WriteCommand(0x1B, 0x47, (byte)(startAddress >> 8), (byte)(startAddress & 0xFF), 0x03);
                 Thread.Sleep(50);
                 byte[] rawData = ReadUntil(0x03);
                 string data = DecodeText(rawData);
@@ -236,4 +236,172 @@ public class MagicBall : IDisposable
         _serialPort.Write(new[] { value }, 0, 1);
         Thread.Sleep(_interCharPauseMs);
     }
+    private Dictionary<ushort, string> _lastMemoryState = new();
+
+    public void ReadMemoryWithLogging(ushort startAddress, ushort endAddress)
+    {
+        const int chunkSize = 10;
+        ushort currentAddress = startAddress;
+
+        Console.WriteLine($"Geheugenonderzoek van adres {startAddress:X4} tot {endAddress:X4} gestart...");
+
+        while (currentAddress <= endAddress)
+        {
+            Console.WriteLine($"\nGeheugenoverzicht van adres {currentAddress:X4} tot {Math.Min(currentAddress + chunkSize - 1, endAddress):X4}:");
+
+            for (ushort address = currentAddress; address < currentAddress + chunkSize && address <= endAddress; address++)
+            {
+                try
+                {
+                    WriteCommandWithoutEcho(0x1B, 0x47, (byte)(address >> 8), (byte)(address & 0xFF), 0x03);
+                    Thread.Sleep(50);
+                    byte[] rawData = ReadUntil(0x03);
+                    string data = DecodeText(rawData);
+
+                    // Log veranderingen
+                    if (_lastMemoryState.TryGetValue(address, out string lastValue))
+                    {
+                        if (lastValue != data)
+                        {
+                            Console.WriteLine($"Adres {address:X4} gewijzigd: {lastValue} -> {data}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Adres {address:X4}: {data}");
+                    }
+
+                    _lastMemoryState[address] = data;
+                }
+                catch
+                {
+                    Console.WriteLine($"Adres {address:X4}: [Geen data]");
+                }
+            }
+
+            currentAddress += (ushort)chunkSize;
+
+            if (currentAddress > endAddress) break;
+
+            Console.WriteLine("\nDruk op spatie om verder te gaan, of op enter om te stoppen...");
+            ConsoleKeyInfo key = Console.ReadKey();
+            if (key.Key == ConsoleKey.Enter) break;
+        }
+
+        Console.WriteLine("\nGeheugenonderzoek voltooid.");
+    }
+
+
+    
+    public string ReadMemoryAddress(ushort address)
+    {
+        try
+        {
+            // Stuur commando
+            WriteCommandWithoutEcho(0x1B, 0x47, (byte)(address >> 8), (byte)(address & 0xFF), 0x03);
+            Thread.Sleep(50);
+
+            // Lees rauwe data
+            byte[] rawData = ReadUntil(0x03);
+
+            // Log rauwe data
+            Log($"Adres {address:X4}, rauwe bytes: {BitConverter.ToString(rawData)}");
+
+            // Decodeer en retourneer
+            return DecodeText(rawData);
+        }
+        catch (Exception ex)
+        {
+            Log($"[FOUT] Kan adres {address:X4} niet lezen: {ex.Message}");
+            return "[Geen Data]";
+        }
+    }
+
+    private void Log(string message)
+    {
+        Console.WriteLine($"[LOG] {DateTime.Now:HH:mm:ss}: {message}");
+    }
+    
+    public void MemoryMapWithComparison(string standardText)
+    {
+        ushort startAddress = 0x0000;
+        ushort endAddress = 0x07EF;
+        int batchSize = 16;
+
+        Console.WriteLine("Geheugenoverzicht (Adres: Data):");
+        while (startAddress <= endAddress)
+        {
+            for (ushort address = startAddress; address < startAddress + batchSize && address <= endAddress; address++)
+            {
+                try
+                {
+                    WriteCommandWithoutEcho(0x1B, 0x47, (byte)(address >> 8), (byte)(address & 0xFF), 0x03);
+                    Thread.Sleep(50);
+
+                    byte[] rawData = ReadUntil(0x03);
+                    string data = DecodeText(rawData);
+
+                    // Vergelijk met standaardtekst
+                    bool matchesStandard = standardText.Contains(data);
+
+                    Console.WriteLine($"Adres {address:X4}: {data} " +
+                                      (matchesStandard ? "[MATCH]" : "[GEEN MATCH]"));
+                }
+                catch
+                {
+                    Console.WriteLine($"Adres {address:X4}: [Geen Data]");
+                }
+            }
+
+            startAddress += (ushort)batchSize;
+
+            Console.WriteLine("\nDruk op spatie om verder te gaan, of op enter om te stoppen...");
+            ConsoleKeyInfo key = Console.ReadKey();
+            if (key.Key == ConsoleKey.Enter) break;
+        }
+    }
+
+    public void PrintMemoryToFile(ushort startAddress, ushort endAddress, string filename)
+    {
+        try
+        {
+            using var writer = new StreamWriter(filename);
+            writer.WriteLine($"Geheugenoverzicht van adres {startAddress:X4} tot {endAddress:X4}");
+
+            int totalAddresses = endAddress - startAddress + 1;
+            int addressesProcessed = 0;
+
+            for (ushort address = startAddress; address <= endAddress; address++)
+            {
+                try
+                {
+                    // Stuur het commando om een specifiek geheugenadres te lezen
+                    WriteCommandWithoutEcho(0x1B, 0x47, (byte)(address >> 8), (byte)(address & 0xFF), 0x03);
+
+                    // Verminder onnodige wachttijd
+                    Thread.Sleep(10);
+
+                    byte[] rawData = ReadUntil(0x03);
+                    string data = DecodeText(rawData);
+
+                    writer.WriteLine($"Adres {address:X4}: {data}");
+                }
+                catch
+                {
+                    writer.WriteLine($"Adres {address:X4}: [Geen Data]");
+                }
+
+                // Toon voortgang in de vorm van "1/1000", "2/1000", enzovoort
+                addressesProcessed++;
+                Console.WriteLine($"{addressesProcessed}/{totalAddresses}");
+            }
+
+            Console.WriteLine($"Geheugen is succesvol opgeslagen in {filename}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FOUT] Kan geheugen niet naar bestand schrijven: {ex.Message}");
+        }
+    }
+
 }

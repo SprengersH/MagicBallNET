@@ -4,6 +4,16 @@ namespace MagicBallNet;
 
 class Program
 {
+    
+    private void PrintWithColor(string message, ConsoleColor color)
+    {
+        var originalColor = Console.ForegroundColor;
+        Console.ForegroundColor = color;
+        Console.WriteLine(message);
+        Console.ForegroundColor = originalColor;
+    }
+
+    
     static void Main(string[] args)
     {
         Console.WriteLine("== MagicBall CLI ==");
@@ -24,7 +34,11 @@ class Program
             Console.WriteLine("8. Vergelijk Standaardtekst met Geheugenpagina's");
             Console.WriteLine("9. Reset Apparaat");
             Console.WriteLine("10. Stoppen");
-
+            Console.WriteLine("11. Lees Geheugenadres");
+            Console.WriteLine("12. Lees Geheugen per 10 Adressen");
+            Console.WriteLine("13. Geavanceerd geheugenonderzoek");
+            Console.WriteLine("14. Print Geheugen naar Bestand");
+            
             Console.Write("Uw keuze: ");
             string? keuze = Console.ReadLine();
 
@@ -100,6 +114,68 @@ class Program
                     case "10":
                         Console.WriteLine("Programma beëindigd.");
                         return;
+                    
+                    case "11":
+                        Console.Write("Voer het adres in (hexadecimaal, bijv. 0001): ");
+                        string? hexAddress = Console.ReadLine();
+
+                        if (ushort.TryParse(hexAddress, System.Globalization.NumberStyles.HexNumber, null, out ushort address))
+                        {
+                            string data = magicBall.ReadMemoryAddress(address);
+                            Console.WriteLine($"Geheugen op adres {address:X4}: {data}");
+                        }
+                        else
+                        {
+                            Console.WriteLine("[FOUT] Ongeldig adresformaat. Gebruik bijvoorbeeld '0001'.");
+                        }
+                        break;
+
+                    case "12":
+                        Console.Write("Voer het startadres in (hexadecimaal, bijv. 0000): ");
+                        string? hexStart = Console.ReadLine();
+                        Console.Write("Voer het eindadres in (hexadecimaal, bijv. 07EF): ");
+                        string? hexEnd = Console.ReadLine();
+
+                        if (ushort.TryParse(hexStart, System.Globalization.NumberStyles.HexNumber, null, out ushort startAddress) &&
+                            ushort.TryParse(hexEnd, System.Globalization.NumberStyles.HexNumber, null, out ushort endAddress))
+                        {
+                            magicBall.ReadMemoryWithLogging(startAddress, endAddress);
+                        }
+                        else
+                        {
+                            Console.WriteLine("[FOUT] Ongeldige adresformaat. Gebruik bijvoorbeeld '0000' en '07EF'.");
+                        }
+                        break;
+                    
+                    case "13":
+                        Console.WriteLine("Start geavanceerd geheugenonderzoek...");
+                        Console.Write("Voer de standaardtekst in voor vergelijking: ");
+                        string? standard = Console.ReadLine() ?? string.Empty;
+
+                        magicBall.MemoryMapWithComparison(standard);
+                        break;
+
+                    case "14":
+                        Console.Write("Voer het startadres in (hexadecimaal, bijv. 0000): ");
+                        string? hexStartPrint = Console.ReadLine();
+                        Console.Write("Voer het eindadres in (hexadecimaal, bijv. 07EF): ");
+                        string? hexEndPrint = Console.ReadLine();
+                        Console.Write("Voer de bestandsnaam in (bijv. geheugen_dump.txt): ");
+                        string? filename = Console.ReadLine();
+
+                        if (ushort.TryParse(hexStartPrint, System.Globalization.NumberStyles.HexNumber, null, out ushort startPrint) &&
+                            ushort.TryParse(hexEndPrint, System.Globalization.NumberStyles.HexNumber, null, out ushort endPrint) &&
+                            !string.IsNullOrWhiteSpace(filename))
+                        {
+                            magicBall.PrintMemoryToFile(startPrint, endPrint, filename);
+                        }
+                        else
+                        {
+                            Console.WriteLine("[FOUT] Ongeldige invoer. Gebruik hexadecimale adressen en een geldige bestandsnaam.");
+                        }
+                        break;
+
+
 
                     default:
                         Console.WriteLine("Ongeldige keuze. Probeer opnieuw.");
