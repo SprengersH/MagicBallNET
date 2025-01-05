@@ -40,3 +40,7 @@ Thumbs.db
 *.tmp
 *.temp
 ~$*
+
+# Rider/JetBrains settings
+*.DotSettings.user
+
