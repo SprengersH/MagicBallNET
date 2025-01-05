@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lichtkrant", "Lichtkrant\Lichtkrant.csproj", "{0B9DA987-EB21-48A0-91D2-D0DAFCFF900C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MagicBallNet", "MagicBallNet\MagicBallNet.csproj", "{0B9DA987-EB21-48A0-91D2-D0DAFCFF900C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MagicBallJavaEnglish", "MagicBallJavaEnglish", "{CB2A3FD6-9E9A-4BBD-818A-F8EB464D96E7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

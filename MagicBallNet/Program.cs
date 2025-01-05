@@ -1,10 +1,10 @@
-﻿using Lichtkrant;
+﻿namespace MagicBallNet;
 
 class Program
 {
     static void Main(string[] args)
     {
-        Console.WriteLine("== Lichtkrant CLI ==");
+        Console.WriteLine("== MagicBall CLI ==");
 
         string port = "COM6"; // Pas aan naar de juiste COM-poort
         using var magicBall = new MagicBall(port);
@@ -45,7 +45,7 @@ class Program
                         break;
 
                     case "3":
-                        Console.WriteLine("Huidige Tekst op de Lichtkrant:");
+                        Console.WriteLine("Huidige Tekst op de MagicBall:");
                         Console.WriteLine(magicBall.GetDisplayedText());
                         break;
 

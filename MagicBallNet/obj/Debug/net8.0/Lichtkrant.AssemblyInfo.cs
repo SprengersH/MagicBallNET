@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Lichtkrant")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a2927ae9b2327e8ba92bea7ae88d2c728fdf7832")]
 [assembly: System.Reflection.AssemblyProductAttribute("Lichtkrant")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Lichtkrant")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO.Ports;
+﻿using System.IO.Ports;
 using System.Text;
-using System.Threading;
 
-namespace Lichtkrant;
+namespace MagicBallNet;
 
 public class MagicBall : IDisposable
 {
